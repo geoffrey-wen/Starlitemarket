@@ -1,0 +1,99 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<article class="media content-section">
+    <div class="media-body">
+        <div class="article-metadata">
+            <a class="mr-2" href="#">
+                {{ warehouse.creator }}
+            </a>
+            <small class="text-muted">
+                {{ warehouse.date_added|date:"F d, Y" }}
+            </small>
+        </div>
+        <h4 class="mt-2 text-secondary">
+            {{ warehouse.slug }}
+        </h4>
+        <h2>
+            {{ warehouse.name }}
+        </h2>
+        {% if 0 %}
+        <div>
+            <img class="img-fluid mx-auto d-block" style="height: 300px" src="{{ object.image.url }}">
+        </div>
+        {% endif %}
+        <p class="article-content">
+            {{ warehouse.note }}
+        </p>
+    </div>
+</article>
+
+<div class="card card-body">
+        <form method="get">
+        {{product_filter.form|crispy}}
+        <button class="btn btn-outline-info" type="submit">
+            Search
+        </button>
+    </form>
+    <table class="table table-sm table-hover table-responsive">
+        <tr>
+            <th style="text-align:center">Item</th>
+            <th style="text-align:center">Exp Date</th>
+            <th style="text-align:center">Cost</th>
+            <th style="text-align:center">Price</th>
+            <th style="text-align:center">Inbound Order</th>
+            <th style="text-align:center">Outbound Order</th>
+            <th style="text-align:center">Note</th>
+        </tr>
+        {% for product in products %}
+        <tr>
+            <td class="align-middle" style="text-align:center">
+                {% if product.exp_date %}
+                    <a class="btn btn-sm btn-outline-info" href="{% url 'product-detail' product.sku.slug product.exp_date|date:'m-d-Y' %}">{{ product }}</a>
+                {% else %}
+                    {{ product }}
+                {% endif %}
+            </td>
+            <td class="align-middle" style="text-align:center">
+                {% if product.exp_date %}
+                    {{ product.exp_date|date:"dMy" }}
+                {% endif %}
+            </td>
+            <td class="align-middle" style="text-align:center">
+                {% if product.cost %}
+                    {{ product.cost_view }}
+                {% endif %}
+            </td>
+            <td class="align-middle" style="text-align:center">
+                {% if product.price %}
+                    {{ product.price }}
+                {% endif %}
+            </td>
+            <td class="align-middle" style="text-align:center">
+                {% if product.inbound_order %}
+                <a class="btn btn-sm btn-outline-info" href="{% url 'inbound-detail' product.inbound_order.pk %}">{{ product.inbound_order }}</a>
+                {% endif %}
+            </td>
+            <td class="align-middle" style="text-align:center">
+                {% if product.outbound_order %}
+                    {{ product.outbound_order }}
+                {% endif %}
+            </td>
+            <td class="align-middle">
+                {% if product.note %}
+                {% if product.note|length > 140 %}
+                    {{ product.note|slice:140 }} ...
+                {% else %}
+                    {{ product.note }}
+                {% endif %}
+                {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+</div>
+<br>
+
+
+{% endblock %}

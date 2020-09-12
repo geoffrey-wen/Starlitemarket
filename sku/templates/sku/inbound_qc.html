@@ -1,0 +1,72 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<article class="media content-section">
+    <div class="media-body">
+        <h2>
+            Inbound Quality Control
+        </h2>
+        {% if 0 %}
+        <div>
+            <img class="img-fluid mx-auto d-block" style="height: 300px" src="{{ object.image.url }}">
+        </div>
+        {% endif %}
+        <p class="article-content">
+            {{ marketplace.note }}
+        </p>
+    </div>
+</article>
+
+<div class="card card-body">
+    <table class="table table-sm table-hover table-responsive">
+        <tr>
+            <th style="text-align:center">Inbound Order</th>
+            <th style="text-align:center">Order Date</th>
+            <th style="text-align:center">Total Item</th>
+            <th style="text-align:center">Delivered</th>
+            <th style="text-align:center">OTW</th>
+            <th style="text-align:center">Note</th>
+        </tr>
+        {% for datum in data %}
+        <tr>
+            <td class="align-middle" style="text-align:center">
+                <a class="btn btn-sm btn-outline-info" href="{% url 'inbound-detail' datum.0.pk %}">{{ datum.0 }}</a>
+            </td>
+            <td class="align-middle" style="text-align:center">
+                {% if datum.0.date_added %}
+                    {{ datum.0.date_added|date:"dMy" }}
+                {% endif %}
+            </td>
+            <td class="align-middle" style="text-align:center">
+                {% if datum.1 %}
+                    {{ datum.1 }}
+                {% endif %}
+            </td>
+            <td class="align-middle" style="text-align:center">
+                {% if datum.2 %}
+                    {{ datum.2 }}
+                {% endif %}
+            </td>
+            <td class="align-middle" style="text-align:center">
+                {% if datum.3 %}
+                    {{ datum.3 }}
+                {% endif %}
+            </td>
+            <td class="align-middle">
+                {% if datum.0.note %}
+                {% if datum.0.note|length > 140 %}
+                    {{ datum.0.note|slice:140 }} ...
+                {% else %}
+                    {{ datum.0.note }}
+                {% endif %}
+                {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+</div>
+<br>
+
+
+{% endblock %}

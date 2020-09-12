@@ -1,0 +1,99 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<div class="content-section">
+    <h2>Order : {{code}} </h2>
+    <legend class="border-bottom"></legend>
+    <form id="huyu-form">
+        {% csrf_token %}
+        <div class="row">
+        <div class="col">
+        <div class="input-group mb-3">
+            <div class="input-group-prepend">
+                <span class="input-group-text">Rp</span>
+            </div>
+            <input class="form-control" type="number" placeholder="Total Paid Cost" name="tpc" required>
+        </div>
+        </div>
+        <div class="col">
+        <div class="input-group mb-3">
+            <select class="custom-select" name="marketplace" required>
+                <option selected>Marketplace</option>
+                {% for marketplace in marketplaces %}
+                    <option value={{marketplace.pk}}>{{marketplace.name}}</option>
+                {% endfor %}
+            </select>
+        </div>
+        </div>
+        </div>
+        <button class="btn btn-sm btn-outline-primary mb-2" id="add-more">Add Ordered Item(s)</button>
+        <div id="wrapper"></div>
+        <div class="input-group mb-3">
+            <input class="form-control" type="text" placeholder="Note" name="note">
+        </div>
+        <button class="btn btn-sm btn-outline-primary mb-2" id="submit">Submit</button>
+    </form>
+</div>
+{% endblock%}
+
+
+{% block jquery %}
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function(){
+            const addMoreButton = $("#add-more");
+            const wrapper = $('#wrapper');
+            const submitFormButton = $("#submit");
+
+            let inputIndex = 0;
+            addMoreButton.on("click", function(e) {
+                e.preventDefault();
+                wrapper.append(`
+                    <div class="input-group mb-3">
+                          <select class="custom-select" name="sku[]">
+                            <option selected>SKU</option>
+                            {% for sku in skus %}
+                                <option value={{sku.pk}}>{{sku}}</option>
+                            {% endfor %}
+                          </select>
+                        <input class="form-control" type="number" placeholder="Qty" name="qty[]" style="max-width: 70px;">
+                        <input class="form-control" type="number" placeholder="Price" name="price[]" style="max-width: 150px;">
+                        <button class="btn btn-sm btn-outline-danger ml-1" id="remove-button">Remove</button>
+                    </div>`
+                );
+                inputIndex++;
+            })
+
+            wrapper.on('click', '#remove-button', function(e, attr) {
+                e.preventDefault();
+                $(this).parent('div').remove();
+            })
+
+            submitFormButton.on('click', function(e) {
+                e.preventDefault()
+                const huyuForm = document.getElementById('huyu-form');
+                const fd = new FormData(huyuForm);
+
+                console.log(fd.get('foo[0]'))
+
+                $.ajax({
+                    url: 'in-order-new',
+                    type: 'POST',
+                    data: fd,
+                    processData: false,
+                    contentType: false,
+                    mimeType: 'multipart/form-data',
+                    success: function(returndata){
+                        // alert("doni");
+                        window.location.href = '/';
+                    }
+                // }).done(function(e) {
+                //    alert("done");
+                // }).fail(function(err) {
+                //    console.log(err);
+                })
+            });
+        });
+    </script>
+{% endblock%}

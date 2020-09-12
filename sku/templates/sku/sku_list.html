@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<br>
+<div class="row">
+    <div class="col">
+        <div class="card card-body">
+            <form method="get">
+                {{sku_filter.form|crispy}}
+                <button class="btn btn-outline-info" type="submit">
+                    Search
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+<br>
+<div class="row">
+    <div class="col-md">
+        <div class="card card-body">
+            <table class="table table-sm table-hover table-responsive">
+                <tr>
+                    <th style="text-align:center">SKU</th>
+                    <th style="text-align:center">Name</th>
+                    <th style="text-align:center">Date Added</th>
+                    <th style="text-align:center">Avg Cost</th>
+                    <th style="text-align:center">Avg Price</th>
+                    <th style="text-align:center">Note</th>
+                </tr>
+                {% for sku in skus %}
+                <tr>
+                    <td class="align-middle" style="text-align:center">
+                        <a class="btn btn-sm btn-outline-info" href="{% url 'sku-detail' sku.slug %}">{{ sku.slug }}</a>
+                    </td>
+                    <td class="align-middle">
+                        {{ sku.name }}
+                    </td>
+                    <td class="align-middle" style="text-align:center">
+                        {{ sku.date_added|date:"dMy" }}
+                    </td>
+                    <td class="align-middle" style="text-align:center">
+                        {{ sku.avg_cost}}
+                    </td>
+                    <td class="align-middle" style="text-align:center">
+                        {{ sku.avg_price}}
+                    </td>
+                    <td class="align-middle" >
+                    {% if sku.note|length > 140 %}
+                            {{ sku.note|slice:140 }} ...
+                        {% else %}
+                            {{ sku.note }}
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </table>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

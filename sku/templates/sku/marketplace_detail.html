@@ -1,0 +1,89 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<article class="media content-section">
+    <div class="media-body">
+        <div class="article-metadata">
+            <a class="mr-2" href="#">
+                {{ marketplace.creator }}
+            </a>
+            <small class="text-muted">
+                {{ marketplace.date_added|date:"F d, Y" }}
+            </small>
+        </div>
+        <h4 class="mt-2 text-secondary">
+            {{ marketplace.slug }}
+        </h4>
+        <h2>
+            {{ marketplace.name }}
+        </h2>
+        {% if 0 %}
+        <div>
+            <img class="img-fluid mx-auto d-block" style="height: 300px" src="{{ object.image.url }}">
+        </div>
+        {% endif %}
+        <p class="article-content">
+            {{ marketplace.note }}
+        </p>
+    </div>
+</article>
+
+<div class="card card-body">
+        <form method="get">
+        {{inbound_filter.form|crispy}}
+        <button class="btn btn-outline-info" type="submit">
+            Search
+        </button>
+    </form>
+    <table class="table table-sm table-hover table-responsive">
+        <tr>
+            <th style="text-align:center">Inbound Order</th>
+            <th style="text-align:center">Order Date</th>
+            <th style="text-align:center">Total Item Cost</th>
+            <th style="text-align:center">Total Paid Cost</th>
+            <th style="text-align:center">Discount</th>
+            <th style="text-align:center">Note</th>
+        </tr>
+        {% for inbound in inbounds %}
+        <tr>
+            <td class="align-middle" style="text-align:center">
+                <a class="btn btn-sm btn-outline-info" href="{% url 'inbound-detail' inbound.pk %}">{{ inbound }}</a>
+            </td>
+            <td class="align-middle" style="text-align:center">
+                {% if inbound.date_added %}
+                    {{ inbound.date_added|date:"dMy" }}
+                {% endif %}
+            </td>
+            <td class="align-middle" style="text-align:center">
+                {% if inbound.total_cost %}
+                    {{ inbound.total_cost }}
+                {% endif %}
+            </td>
+            <td class="align-middle" style="text-align:center">
+                {% if inbound.total_paid_cost %}
+                    {{ inbound.total_paid_cost }}
+                {% endif %}
+            </td>
+            <td class="align-middle" style="text-align:center">
+                {% if inbound.discount %}
+                    {{ inbound.discount.1 }}
+                {% endif %}
+            </td>
+            <td class="align-middle">
+                {% if inbound.note %}
+                {% if inbound.note|length > 140 %}
+                    {{ inbound.note|slice:140 }} ...
+                {% else %}
+                    {{ inbound.note }}
+                {% endif %}
+                {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+</div>
+<br>
+
+
+{% endblock %}

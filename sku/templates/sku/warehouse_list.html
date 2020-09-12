@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<br>
+<div class="row">
+    <div class="col">
+        <div class="card card-body">
+            <form method="get">
+                {{warehouse_filter.form|crispy}}
+                <button class="btn btn-outline-info" type="submit">
+                    Search
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+<br>
+<div class="row">
+    <div class="col-md">
+        <div class="card card-body">
+            <table class="table table-sm table-hover table-responsive">
+                <tr>
+                    <th style="text-align:center">Warehouse</th>
+                    <th style="text-align:center">Name</th>
+                    <th style="text-align:center">Date Added</th>
+                    <th style="text-align:center">Note</th>
+                </tr>
+                {% for warehouse in warehouses %}
+                <tr>
+                    <td class="align-middle" style="text-align:center">
+                        <a class="btn btn-sm btn-outline-info" href="{% url 'warehouse-detail' warehouse.slug %}">{{ warehouse.slug }}</a>
+                    </td>
+                    <td class="align-middle">
+                        {{ warehouse.name }}
+                    </td>
+                    <td class="align-middle" style="text-align:center">
+                        {{ warehouse.date_added|date:"dMy" }}
+                    </td>
+                    <td class="align-middle" >
+                    {% if warehouse.note|length > 140 %}
+                            {{ warehouse.note|slice:140 }} ...
+                        {% else %}
+                            {{ warehouse.note }}
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </table>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

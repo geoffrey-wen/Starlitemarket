@@ -1,0 +1,118 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<form id="huyu-form">
+{% csrf_token %}
+<article class="media content-section">
+    <div class="media-body">
+        <div class="row border-0">
+            <div class="col">
+                <h4 class="mt-2 text-secondary">
+                    {{ products.0.sku.slug }}
+                </h4>
+            </div>
+            <div class="col">
+                <h4 class="mt-2 text-secondary float-right">
+                    {{ products.0.exp_date |date:"dMY" }}
+                </h4>
+            </div>
+        </div>
+        <h2>
+            {{ products.0.sku.name }}
+        </h2>
+        <h6>
+            Total
+        </h6>
+        <h6>
+            Ready
+        </h6>
+    </div>
+</article>
+
+<div class="card card-body">
+    <table class="table table-sm table-hover table-responsive">
+        <tr>
+            <th style="text-align:center">Item</th>
+            <th style="text-align:center">Exp Date</th>
+            <th style="text-align:center">Cost</th>
+            <th style="text-align:center">Location</th>
+            <th style="text-align:center">Note</th>
+        </tr>
+        {% for product in products %}
+        <tr>
+            <td class="align-middle" style="text-align:center">
+                    {{ product }}
+            </td>
+            <td class="align-middle" style="text-align:center" >
+                {% if product.exp_date %}
+                <input class="form-control" type="date" name="date[]" value="{{product.exp_date|date:'Y-m-d'}}" />
+                {% else %}
+                <input class="form-control" type="text" name="date[]" placeholder="MM-DD-YYYY" />
+                {% endif %}
+            </td>
+            <td class="align-middle" style="text-align:center">
+                {% if product.cost %}
+                    {{ product.cost_view }}
+                {% endif %}
+            </td>
+            <td class="align-middle" style="text-align:center">
+                <select class="custom-select" name="location[]">
+                    <option value={{product.location.pk}} selected>{{product.location.slug}}</option>
+                    {% for location in locations %}
+                        <option value={{location.pk}}>{{location.slug}}</option>
+                    {% endfor %}
+                </select>
+            </td>
+            <td class="align-middle">
+                {% if product.note %}
+                <input class="form-control" type="text" name="note[]" value="{{ product.note|slice:30 }}" />
+                {% else %}
+                <input class="form-control" type="text" name="note[]"/>
+                {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+        <button class="btn btn-outline-info" id="submit">Save</button>
+</div>
+<br>
+<div id="url-div" url="{% url 'product-detail' products.0.sku.slug products.0.exp_date|date:'m-d-Y' %}"></div>
+</form>
+
+{% endblock %}
+
+{% block jquery %}
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function(){
+            const submitFormButton = $("#submit");
+            var divurl = document.getElementById('url-div').getAttribute('url');
+
+            submitFormButton.on('click', function(e) {
+                e.preventDefault()
+                const huyuForm = document.getElementById('huyu-form');
+                const fd = new FormData(huyuForm);
+
+                console.log(fd.get('foo[0]'))
+
+                $.ajax({
+                    url: divurl,
+                    type: 'POST',
+                    data: fd,
+                    processData: false,
+                    contentType: false,
+                    mimeType: 'multipart/form-data',
+                    success: function(returndata){
+                        // alert("doni");
+                        window.location.href = divurl;
+                    }
+                // }).done(function(e) {
+                //    alert("done");
+                // }).fail(function(err) {
+                //    console.log(err);
+                })
+            });
+        });
+    </script>
+{% endblock%}
